@@ -1,12 +1,42 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-    Hello WeatherController!
-{% endblock %}
+{% block title 'Hello WeatherController!'%}
 
 {% block body %}
 
-    <h1>Bienvenue sur la page Météo</h1>
-
-
+    <div class="content-wrapper">
+        <h1 class="mt-5">Hello WeatherController !</h1>
+        <div class="">
+            {% for message in app.flashes('error') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {{ form_start(form) }}
+            <div class="main">
+                <div class="form-group search">
+                    <span class="fa fa-search form-control-feedback"></span>
+                    {{ form_row(form.name) }}
+                </div>
+            </div>
+            <div class="switch">
+                <input type="radio" name="units_switcher" id="metric" class="switch-input" value="metric" checked>
+                <label for="metric" class="left"> Metric : C°</label>
+                <input type="radio" name="units_switcher" id="imperial" class="switch-input" value="imperial">
+                <label for="imperial" class="left"> Imperial : F°</label>
+            </div>
+            {{ form_end(form) }}
+        </div>
+        {% if infos is not null and infos.error is null %}
+            <ul id="weather" class="list-group list-group-flush mt-5 ">
+                <li class="list-group-item col-md-4"><span>Ville : </span> <span id="city">{{ infos.content.name }}</span></li>
+                <li class="list-group-item col-md-4"><span>Pays : </span><span id="country">{{ infos.content.sys.country }}</span></li>
+                <li class="list-group-item col-md-4"><span>Température : </span><span>{{ description }} - </span><span id="temp">{{ infos.content.main.temp }}</span><span> °</span></li>
+                <li class="list-group-item col-md-4"><span>Pression atmosphérique : </span><span id="pressure" >{{ infos.content.main.pressure }}</span><span> hPa</span></li>
+                <li class="list-group-item col-md-4"><span>Humidité de l'air : </span><span id="humidity" >{{ infos.content.main.humidity }}</span><span> %</span></li>
+            </ul>
+{#        {% else %}#}
+{#            <p>Veuillez sélectionner une ville</p>#}
+        {% endif %}
+    </div>
 {% endblock %}

@@ -2,7 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\WeatherSearch;
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
+
 
 class WeatherService
 {
@@ -16,15 +19,19 @@ class WeatherService
     }
 
     /**
+     * @param WeatherSearch $search
      * @return array
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
      */
-    public function getWeather()
+    public function getWeather(WeatherSearch $search)
     {
-        $response = $this->client->request('GET', 'https://api.openweathermap.org/data/2.5/weather?lon=1.44&lat=43.6&appid=' . $this->apiKey);
-
-        return [
-            'temperature' => '20', // en °C
-            'vent' => '17', // en km/H
-        ];
+        $output = array("content" => null, "error"=> null);
+        try {
+            $response = $this->client->request('GET', 'https://api.openweathermap.org/data/2.5/weather?q='. $search->getName() .'&units=metric'.'&appid=' . $this->apiKey .'&lang=fr');
+            $output["content"] = json_decode($response->getContent());
+        } catch (HttpExceptionInterface $exception) {
+            $output["error"] = $exception->getMessage();
+        }
+        return $output;
     }
 }
